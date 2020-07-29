@@ -1,0 +1,127 @@
+<% layout('/layouts/default.html', {title: '银川市机关单位信息管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('银川市机关单位信息管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('sz:szEnvironmentalXzzxmember:edit')){ %>
+					<a href="${ctx}/sz/szEnvironmentalXzzxmember/form" class="btn btn-default btnTool" title="${text('新增银川市机关单位信息')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${szEnvironmentalXzzxmember}" action="${ctx}/sz/szEnvironmentalXzzxmember/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('id')}：</label>
+					<div class="control-inline">
+						<#form:input path="wjqyId" maxlength="10" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('单位名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="orgname" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('所属区域')}：</label>
+					<div class="control-inline">
+						<#form:input path="area" maxlength="300" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('上级单位')}：</label>
+					<div class="control-inline">
+						<#form:input path="parentid" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('联系人')}：</label>
+					<div class="control-inline">
+						<#form:input path="contact" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('联系电话')}：</label>
+					<div class="control-inline">
+						<#form:input path="phone" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('一般垃圾回收公司名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="company1" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('餐厨厨余回收公司名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="company2" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('尾菜垃圾回收公司名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="company3" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('资源垃圾回收公司名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="company4" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('有毒有害回收公司名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="company5" maxlength="500" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("id")}', name:'wjqyId', index:'a.wjqy_id', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/sz/szEnvironmentalXzzxmember/form?id='+row.id+'" class="btnList" data-title="${text("编辑银川市机关单位信息")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("单位名称")}', name:'orgname', index:'a.orgname', width:150, align:"left"},
+		{header:'${text("所属区域")}', name:'area', index:'a.area', width:150, align:"left"},
+		{header:'${text("上级单位")}', name:'parentid', index:'a.parentid', width:150, align:"left"},
+		{header:'${text("联系人")}', name:'contact', index:'a.contact', width:150, align:"left"},
+		{header:'${text("联系电话")}', name:'phone', index:'a.phone', width:150, align:"left"},
+		{header:'${text("一般垃圾回收公司名称")}', name:'company1', index:'a.company1', width:150, align:"left"},
+		{header:'${text("餐厨厨余回收公司名称")}', name:'company2', index:'a.company2', width:150, align:"left"},
+		{header:'${text("尾菜垃圾回收公司名称")}', name:'company3', index:'a.company3', width:150, align:"left"},
+		{header:'${text("资源垃圾回收公司名称")}', name:'company4', index:'a.company4', width:150, align:"left"},
+		{header:'${text("有毒有害回收公司名称")}', name:'company5', index:'a.company5', width:150, align:"left"},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('sz:szEnvironmentalXzzxmember:edit')){ %>
+				actions.push('<a href="${ctx}/sz/szEnvironmentalXzzxmember/form?id='+row.id+'" class="btnList" title="${text("编辑银川市机关单位信息")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/sz/szEnvironmentalXzzxmember/delete?id='+row.id+'" class="btnList" title="${text("删除银川市机关单位信息")}" data-confirm="${text("确认要删除该银川市机关单位信息吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

@@ -1,0 +1,93 @@
+<% layout('/layouts/default.html', {title: '随手拍事件管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('随手拍事件管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+<!--				<% if(hasPermi('city:snapshot:citySnapshot:edit')){ %>-->
+<!--					<a href="${ctx}/city/snapshot/citySnapshot/form" class="btn btn-default btnTool" title="${text('新增随手拍事件')}"><i class="fa fa-plus"></i> ${text('新增')}</a>-->
+<!--				<% } %>-->
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${citySnapshot}" action="${ctx}/city/snapshot/citySnapshot/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('提交人')}：</label>
+					<div class="control-inline">
+						<#form:input path="userName" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('联系方式')}：</label>
+					<div class="control-inline">
+						<#form:input path="phone" maxlength="20" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('事件状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="eventStatus" dictType="ssp_status" blankOption="true" class="form-control isQuick"/>
+					</div>
+				</div>
+<!--				<div class="form-group">-->
+<!--					<label class="control-label">${text('部门Id')}：</label>-->
+<!--					<div class="control-inline">-->
+<!--						<#form:input path="officeCode" maxlength="64" class="form-control width-120"/>-->
+<!--					</div>-->
+<!--				</div>-->
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("提交人")}', name:'userName', index:'a.user_name', width:100, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/city/snapshot/citySnapshot/form?id='+row.id+'" class="btnList" data-title="${text("编辑随手拍事件")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("联系方式")}', name:'phone', index:'a.phone', width:150, align:"left"},
+
+		{header:'${text("事件描述")}', name:'description', index:'a.description', width:150, align:"left"},
+		{header:'${text("事件地点")}', name:'address', index:'a.address', width:150, align:"left"},
+		{header:'${text("事件状态")}', name:'eventStatus', index:'a.event_status', width:100, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('ssp_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("受理部门")}', name:'office.fullName', index:'o.full_name', width:200, align:"left"},
+		{header:'${text("提交日期")}', name:'uploadDate', index:'a.upload_date', width:100, align:"center"},
+		{header:'${text("发派日期")}', name:'sendDate', index:'a.send_date', width:100, align:"center"},
+		{header:'${text("接收日期")}', name:'receiveDate', index:'a.receive_date', width:100, align:"center"},
+        {header:'${text("完结日期")}', name:'finishDate', index:'a.finish_date', width:150, align:"center"},
+		{header:'${text("操作")}', name:'actions', width:200, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+				actions.push('<a href="${ctx}/city/snapshot/citySnapshot/form?id='+row.id+'" class="btnList" title="${text("编辑")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+			<% if(hasPermi('city:snapshot:citySnapshot:sspgly')){ %>
+					actions.push('<a href="${ctx}/city/snapshot/citySnapshot/delete?id='+row.id+'" class="btnList" title="${text("删除")}" data-confirm="${text("确认要删除该事件吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+					actions.push('<a href="${ctx}/city/snapshot/citySnapshot/send?id='+row.id+'" class="btnList" title="${text("转派")}" data-confirm="${text("确认要发送该随手拍事件吗？")}"><i class="fa fa-send"></i></a>&nbsp;');
+				<% } %>
+			<% if(hasPermi('city:snapshot:citySnapshot:sspbmfzr')){ %>
+					actions.push('<a href="${ctx}/city/snapshot/citySnapshot/return1?id='+row.id+'" class="btnList" title="${text("退回")}" data-confirm="${text("确认要退回该事件吗？")}"><i class="fa fa-hand-stop-o"></i></a>&nbsp;');
+					actions.push('<a href="${ctx}/city/snapshot/citySnapshot/acceptance?id='+row.id+'" class="btnList" title="${text("受理")}" data-confirm="${text("确认要受理该事件吗？")}"><i class="fa fa-share"></i></a>&nbsp;');
+					actions.push('<a href="${ctx}/city/snapshot/citySnapshot/end?id='+row.id+'" class="btnList" title="${text("完结")}" data-confirm="${text("确认要提交该事件吗？")}"><i class="fa fa-hand-peace-o"></i></a>&nbsp;');
+				<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

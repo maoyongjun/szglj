@@ -1,0 +1,291 @@
+<% layout('/layouts/default.html', {title: '随手拍事件管理', libs: ['validate']}){ %>
+
+<style>
+	.imgcontainer{
+		/*border:1px solid red;*/
+		height: 360px;
+		width: 100%;
+	}
+	.imgcontainer>div{
+		float: left;
+		width: 20%;
+		margin-left: 10%;
+		height: 360px;
+		text-align: center;
+		font-size: 16px;
+	}
+	.imgcontainer>div>img{
+		width: 300px;
+		height: 300px;
+		object-fit: cover;
+		margin-bottom: 10px;
+		cursor: zoom-in;
+	}
+	.bigimg-container{
+		position: absolute;
+		text-align: center;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.5);
+		z-index: 101;
+		display: none;
+	}
+	.imgresult{
+		margin-top: 6%;
+		max-height: 80%;
+		max-width: 100%;
+	}
+	.imgresult:hover{
+		cursor: zoom-out;
+	}
+</style>
+
+<div class="bigimg-container" id="outDiv">
+	<img class="imgresult" id="bigimg" src="${citySnapshot.picUrl1}" onclick="closeBigImg()">
+</div>
+
+<script>
+	function showBigImg(e) {
+		console.log("showBigImg start");
+		console.log(e);
+		$('#bigimg').attr('src',e.src);
+		$('#outDiv').css('display','block');
+	}
+	function closeBigImg() {
+		$('#outDiv').css('display','none');
+	}
+
+</script>
+
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa icon-note"></i> ${text(citySnapshot.isNewRecord ? '新增随手拍事件' : '编辑随手拍事件')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${citySnapshot}" action="${ctx}/city/snapshot/citySnapshot/save" method="post" class="form-horizontal">
+			<div class="box-body">
+<!--				<div class="form-unit">${text('基本信息')}</div>-->
+				<#form:hidden path="id"/>
+
+				<div class="imgcontainer">
+					<div>
+						<% if (citySnapshot.picUrl1!=null&&""!=citySnapshot.picUrl1){ %>
+							<img src="${citySnapshot.picUrl1}" onclick="showBigImg(this)">
+						<% } else{ %>
+							<img src="/js/static/imgbg.png">
+						<% } %>
+						<p>标志性建筑物</p>
+					</div>
+					<div>
+						<% if (citySnapshot.picUrl2!=null&&""!=citySnapshot.picUrl2){ %>
+							<img src="${citySnapshot.picUrl2}" onclick="showBigImg(this)">
+						<% } else{ %>
+							<img src="/js/static/imgbg.png">
+						<% } %>
+						<p>远景</p>
+					</div>
+					<div>
+						<% if (citySnapshot.picUrl3!=null&&""!=citySnapshot.picUrl3){ %>
+							<img src="${citySnapshot.picUrl3}" onclick="showBigImg(this)">
+						<% } else{ %>
+							<img src="/js/static/imgbg.png">
+						<% } %>
+						<p>近景</p>
+					</div>
+				</div>
+
+<!--				<div class="row">-->
+<!--					<div class="col-xs-4">-->
+<!--						<div class="form-group">-->
+<!--							<label class="control-label col-sm-4" title="">-->
+<!--								<span class="required hide">*</span> ${text('标志性建筑物')}：<i class="fa icon-question hide"></i></label>-->
+<!--							<div class="col-sm-8">-->
+<!--								<img src="${citySnapshot.picUrl1}" style="width: 300px;height: 300px;">-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
+<!--					<div class="col-xs-4">-->
+<!--						<div class="form-group">-->
+<!--							<label class="control-label col-sm-4" title="">-->
+<!--								<span class="required hide">*</span> ${text('远景')}：<i class="fa icon-question hide"></i></label>-->
+<!--							<div class="col-sm-8">-->
+<!--								<img src="${citySnapshot.picUrl2}" style="width: 300px;height: 300px;">-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
+<!--					<div class="col-xs-4">-->
+<!--						<div class="form-group">-->
+<!--							<label class="control-label col-sm-4" title="">-->
+<!--								<span class="required hide">*</span> ${text('近景')}：<i class="fa icon-question hide"></i></label>-->
+<!--							<div class="col-sm-8">-->
+<!--								<img src="${citySnapshot.picUrl3}" style="width: 300px;height: 300px;">-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
+<!--				</div>-->
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('提交人')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="userName" maxlength="200" class="form-control" readonly="true"  />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('联系方式')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="phone" maxlength="20" class="form-control" readonly="true"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('受理部门')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:treeselect id="office" title="${text('部门选择')}"
+								path="officeCode" labelPath="office.fullName"
+								url="${ctx}/sys/office/treeData"
+								class="" allowClear="true" canSelectRoot="false" returnFullName="true" canSelectParent="flase"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('事件状态')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="eventStatus" dictType="ssp_status" blankOption="true" class="form-control" readonly="true"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('事件描述')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:textarea path="description" rows="4" maxlength="500" class="form-control" readonly="true"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('处理结果')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<% if(citySnapshot.eventStatus=="2"){ %>
+								<#form:textarea path="result" rows="4" maxlength="255" class="form-control" />
+								<% } else{%>
+								<#form:textarea path="result" rows="4" maxlength="255" class="form-control" readonly="true"/>
+								<% }%>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('事件地点')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="address" maxlength="300" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="row">
+
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('提交日期')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="uploadDate" maxlength="300" dataFormat="date" class="form-control" readonly="true"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('发派日期')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="sendDate" maxlength="300" dataFormat="date" class="form-control" readonly="true"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('接收日期')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="receiveDate" maxlength="300" dataFormat="date" class="form-control" readonly="true"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('完结日期')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="finishDate" maxlength="300" dataFormat="date" class="form-control" readonly="true"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('city:snapshot:citySnapshot:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+
+
+
+</script>
